@@ -12,13 +12,15 @@ module.exports = (sequelize, DataTypes) => {
 
   Pedido.associate = function (models) {
     Pedido.belongsTo(models.Cliente, {
-      foreignKey: "cliente_id"
+      foreignKey: "cliente_id",
+      onDelete: 'CASCADE',
     });
 
     Pedido.belongsToMany(models.Produto, {
       through: 'PedidoProduto',
       as: 'produtos',
-      foreignKey: "pedido_id"
+      foreignKey: "pedido_id",
+      onDelete: 'CASCADE',
     });
   };
 

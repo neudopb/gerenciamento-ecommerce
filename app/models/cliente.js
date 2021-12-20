@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
   Cliente.associate = function(models) {
     Cliente.hasMany(models.Pedido, {
       foreignKey: 'cliente_id',
-      as: 'pedidos'
+      as: 'pedidos',
+      onDelete: 'CASCADE',
     });
   };
 

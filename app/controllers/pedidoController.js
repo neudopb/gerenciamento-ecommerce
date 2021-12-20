@@ -48,3 +48,25 @@ exports.getPedidoPorId = async function(id) {
 
     return pedido;
 };
+
+exports.updatePedido = async function(id, body) {
+    if (Object.keys(body).length === 0) throw new Error('Bad Request');
+
+    const pedido = await exports.getPedidoPorId(id);
+
+    const { produtos, ...data } = body;
+
+    await pedido.update(data);
+
+    if (produtos && produtos.length > 0) {
+        pedido.setProdutos(produtos);
+    }
+
+    return;
+}
+
+exports.deletePedido = async function (id) {
+    const pedido = await exports.getPedidoPorId(id);
+    
+    return pedido.destroy();
+}

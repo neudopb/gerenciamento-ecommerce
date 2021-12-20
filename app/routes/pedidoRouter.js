@@ -29,4 +29,22 @@ router.get('/:id', async function (req, res, next) {
     }
 });
 
+router.put('/:id', async function (req, res, next) {
+    try {
+        await pedidoController.updatePedido(req.params.id, req.body);
+        res.status(204).end();
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.delete('/:id', async function (req, res, next) {
+    try {
+        await pedidoController.deletePedido(req.params.id);
+        res.status(204).end();
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = app => app.use('/pedido', router);
