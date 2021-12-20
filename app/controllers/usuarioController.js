@@ -57,12 +57,11 @@ exports.getUsuarios = async function () {
 
 exports.getUsuarioPorId = async function (id) {
     const usuario = await Usuario.findOne({
-        where: { id: id }
+        where: { id: id },
+        attributes: { exclude: ['senha']}
     });
 
     if (!usuario) throw new Error('Not Found');
-
-    usuario.senha = undefined;
 
     return usuario;
 };
@@ -76,21 +75,15 @@ exports.updateUsuario = async function (id, body) {
         body.senha = await bcrypt.hash(body.senha, 10);
     }
 
-    const result = await Usuario.update(body, {
+    return Usuario.update(body, {
         where: { id: id }
     });
-
-    if (result[0] === 0) throw new Error('Bad Request');
-
-    return;
 };
 
 exports.deleteUsuario = async function (id) {
-    await exports.getUsuarioPorId(id);
+    const usuario = await exports.getUsuarioPorId(id);
 
-    return Usuario.destroy({
-        where: { id: id }
-    });
+    return usuario.destroy();
 };
 
 exports.getUsuarioPorEmail = async function (email) {

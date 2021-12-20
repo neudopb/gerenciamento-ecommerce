@@ -34,23 +34,15 @@ exports.getClientePorId = async function (id) {
 exports.updateCliente = async function (id, body) {
     if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
-    await exports.getClientePorId(id);
+    const cliente = await exports.getClientePorId(id);
 
-    const result = await Cliente.update(body, {
-        where: { id: id }
-    });
-    
-    if (result[0] === 0) throw new Error('Bad Request');
-
-    return;
+    return cliente.update(body);
 };
 
 exports.deleteCliente = async function (id) {
-    await exports.getClientePorId(id);
+    const cliente = await exports.getClientePorId(id);
 
-    return Cliente.destroy({
-        where: { id: id }
-    });
+    return cliente.destroy();
 };
  
 exports.getClientePorEmail = async function (email) {

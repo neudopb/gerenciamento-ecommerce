@@ -59,10 +59,8 @@ exports.updatePedido = async function(id, body) {
     await pedido.update(data);
 
     if (produtos && produtos.length > 0) {
-        pedido.setProdutos(produtos);
+        await pedido.setProdutos(produtos);
     }
-
-    return;
 };
 
 exports.deletePedido = async function (id) {

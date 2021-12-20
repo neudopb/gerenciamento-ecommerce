@@ -25,19 +25,13 @@ exports.getProdutoPorId = async function (id) {
 exports.updateProduto = async function (id, body) {
     if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
-    await exports.getProdutoPorId(id);
+    const produto = await exports.getProdutoPorId(id);
 
-    return Produto.update(body, 
-        {where: {id: id}}
-    );
+    return produto.update(body);
 };
 
 exports.deleteProduto = async function (id) {
     const produto = await exports.getProdutoPorId(id);
 
-    if (!produto) throw new Error('Not Found');
-
-    return Produto.destroy({
-        where: { id: id}
-    });
+    return produto.destroy();
 };
