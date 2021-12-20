@@ -33,12 +33,13 @@ exports.saveUsuario = async function(body) {
 exports.login = async function(body) {
     if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
-    const usuario = await getUsuarioPorEmail(body.email);
+    const usuario = await buscarEmail(body.email);
 
-    if (!usuario) throw new Error({error: 'Not Found'});
+    if (!usuario) throw new Error('Not Found');
+    
 
     if (!await bcrypt.compare(body.senha, usuario.senha))
-        throw new Error({error: 'Not Found'});
+        throw new Error('Not Found');
 
     usuario.senha = undefined;
 
@@ -49,7 +50,9 @@ exports.login = async function(body) {
 };
 
 exports.getUsuarios = async function () {
-    return Usuario.findAll();
+    return Usuario.findAll({
+        attributes: { exclude: ['senha']}
+    });
 };
 
 exports.getUsuarioPorId = async function (id) {
@@ -59,6 +62,8 @@ exports.getUsuarioPorId = async function (id) {
 
     if (!usuario) throw new Error('Not Found');
 
+    usuario.senha = undefined;
+
     return usuario;
 };
 
@@ -66,6 +71,10 @@ exports.updateUsuario = async function (id, body) {
     if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
     await exports.getUsuarioPorId(id);
+
+    if (body.senha){
+        body.senha = await bcrypt.hash(body.senha, 10);
+    }
 
     const result = await Usuario.update(body, {
         where: { id: id }
@@ -88,6 +97,8 @@ exports.getUsuarioPorEmail = async function (email) {
     const usuario = await buscarEmail(email);
 
     if (!usuario) throw new Error('Not Found');
+
+    usuario.senha = undefined;
 
     return usuario;
 };
