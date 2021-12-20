@@ -7,6 +7,14 @@ module.exports = (sequelize, DataTypes) => {
     codigo: DataTypes.STRING,
     caracteristicas: DataTypes.STRING
   }, {});
+
+  Produto.associate = function (models) {
+    Produto.belongsToMany(models.Pedido, {
+      through: 'PedidoProduto',
+      as: 'pedidos',
+      foreignKey: 'produto_id'
+    });
+  };
   
   return Produto;
 };

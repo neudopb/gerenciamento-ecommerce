@@ -8,5 +8,12 @@ module.exports = (sequelize, DataTypes) => {
     endereco: DataTypes.STRING
   }, {});
 
+  Cliente.associate = function(models) {
+    Cliente.hasMany(models.Pedido, {
+      foreignKey: 'cliente_id',
+      as: 'pedidos'
+    });
+  };
+
   return Cliente;
 };

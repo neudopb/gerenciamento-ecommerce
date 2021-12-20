@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   });
-
-  // Usuario.associate = function (models) {
-  //   // define association here
-  // };
   
   return Usuario;
 };
