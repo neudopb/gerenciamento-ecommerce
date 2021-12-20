@@ -1,7 +1,13 @@
 const Cliente = require('../models').Cliente;
 
+function buscarEmail(email) {
+    return Cliente.findOne({
+        where: { email: email }
+    });
+};
+
 exports.saveCliente = async function (body) {
-    const searchCliente = await exports.getClientePorEmail(body.email);
+    const searchCliente = await buscarEmail(body.email);
 
     if (searchCliente) throw new Error('Conflict');
 
@@ -13,36 +19,42 @@ exports.getClientes = async function () {
 };
 
 exports.getClientePorId = async function (id) {
+
     return Cliente.findOne({
         where: { id: id }
     });
-}
+};
 
 exports.getClientePorEmail = async function (email) {
-    return Cliente.findOne({
-        where: { email: email }
-    });
-};
-
-exports.getClientePorNome = async function (nome) {
-    return Cliente.findAll({
-        where: { nome: nome }
-    });
-};
-
-exports.updateCliente = async function (body) {
-    const cliente = await exports.getClientePorId(body.id);
+    const cliente = await buscarEmail(email);
 
     if (!cliente) throw new Error('Not Found');
 
-    return Cliente.update({
-        nome: body.nome || cliente.nome,
-        email: body.email || cliente.email,
-        telefone: body.telefone || cliente.telefone,
-        endereco: body.endereco || cliente.endereco,
-        },
-        {returning: true, where: {id: body.id}}
+    return cliente;
+};
+
+exports.getClientePorNome = async function (nome) {
+    const clientes = await Cliente.findAll({
+        where: { nome: nome }
+    });
+
+    if (clientes.length === 0) throw new Error('Not Found');
+
+    return clientes;
+};
+
+exports.updateCliente = async function (id, body) {
+    const cliente = await exports.getClientePorId(id);
+
+    if (!cliente) throw new Error('Not Found');
+
+    const result = await Cliente.update(body, 
+        {where: { id: id }}
     );
+    
+    if (result[0] === 0) throw new Error('Bad Request');
+
+    return;
 };
 
 exports.deleteCliente = async function (id) {
