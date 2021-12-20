@@ -48,7 +48,7 @@ exports.deleteCliente = async function (id) {
         where: { id: id }
     });
 };
-
+ 
 exports.getClientePorEmail = async function (email) {
     const cliente = await buscarEmail(email);
 
