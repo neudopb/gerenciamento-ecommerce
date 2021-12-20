@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 
-router.post('/cadastrar', async function (req, res, next) {
+router.post('/', async function (req, res, next) {
     try {
         const usuario = await usuarioController.saveUsuario(req.body);
         res.status(201).json(usuario);

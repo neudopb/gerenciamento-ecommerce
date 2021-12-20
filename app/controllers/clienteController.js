@@ -7,6 +7,9 @@ function buscarEmail(email) {
 };
 
 exports.saveCliente = async function (body) {
+
+    if (Object.keys(body). length === 0) throw new Error('Bad Request');
+
     const searchCliente = await buscarEmail(body.email);
 
     if (searchCliente) throw new Error('Conflict');
@@ -20,15 +23,19 @@ exports.getClientes = async function () {
 
 exports.getClientePorId = async function (id) {
 
-    return Cliente.findOne({
+    const cliente = await Cliente.findOne({
         where: { id: id }
     });
+
+    if (!cliente) throw new Error('Not Found');
+
+    return cliente;
 };
 
 exports.updateCliente = async function (id, body) {
-    const cliente = await exports.getClientePorId(id);
+    if (Object.keys(body). length === 0) throw new Error('Bad Request');
 
-    if (!cliente) throw new Error('Not Found');
+    const cliente = await exports.getClientePorId(id);
 
     const result = await Cliente.update(body, 
         {where: { id: id }}

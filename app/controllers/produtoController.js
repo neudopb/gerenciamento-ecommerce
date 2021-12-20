@@ -1,6 +1,9 @@
 const Produto = require('../models').Produto;
 
 exports.saveProduto = async function (body) {
+
+    if (Object.keys(body). length === 0) throw new Error('Bad Request');
+    
     return Produto.create(body);
 };
 
@@ -10,15 +13,19 @@ exports.getProdutos = async function () {
 
 exports.getProdutoPorId = async function (id) {
     // return Produto.findOne(id);
-    return Produto.findOne({
+    const produto = await Produto.findOne({
         where: {id: id}
     });
+
+    if (!produto) throw new Error('Not Found');
+
+    return produto;
 };
 
 exports.updateProduto = async function (id, body) {
-    const produto = await exports.getProdutoPorId(id);
+    if (Object.keys(body). length === 0) throw new Error('Bad Request');
 
-    if (!produto) throw new Error('Not Found');
+    await exports.getProdutoPorId(id);
 
     return Produto.update(body, 
         {where: {id: id}}
