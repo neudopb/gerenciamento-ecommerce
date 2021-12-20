@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pedidoController = require('../controllers/pedidoController');
+const middleware = require('../middlewares/auth');
 
 router.post('/', async function (req, res, next) {
     try {
@@ -11,7 +12,7 @@ router.post('/', async function (req, res, next) {
     }
 });
 
-router.get('/', async function (req, res, next) {
+router.get('/', middleware, async function (req, res, next) {
     try {
         const pedidos = await pedidoController.getPedidos();
         res.status(200).json(pedidos);
@@ -20,7 +21,7 @@ router.get('/', async function (req, res, next) {
     }
 });
 
-router.get('/:id', async function (req, res, next) {
+router.get('/:id', middleware, async function (req, res, next) {
     try {
         const pedido = await pedidoController.getPedidoPorId(req.params.id);
         res.status(200).json(pedido);
@@ -29,7 +30,7 @@ router.get('/:id', async function (req, res, next) {
     }
 });
 
-router.put('/:id', async function (req, res, next) {
+router.put('/:id', middleware, async function (req, res, next) {
     try {
         await pedidoController.updatePedido(req.params.id, req.body);
         res.status(204).end();
@@ -38,7 +39,7 @@ router.put('/:id', async function (req, res, next) {
     }
 });
 
-router.delete('/:id', async function (req, res, next) {
+router.delete('/:id', middleware, async function (req, res, next) {
     try {
         await pedidoController.deletePedido(req.params.id);
         res.status(204).end();
@@ -47,7 +48,7 @@ router.delete('/:id', async function (req, res, next) {
     }
 });
 
-router.get('/cliente/:id', async function (req, res, next) {
+router.get('/cliente/:id', middleware, async function (req, res, next) {
     try {
         const pedidos = await pedidoController.getPedidoPorCliente(req.params.id);
         res.status(200).json(pedidos);

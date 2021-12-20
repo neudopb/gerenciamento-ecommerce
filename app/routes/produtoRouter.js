@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const produtoController = require('../controllers/produtoController');
+const middleware = require('../middlewares/auth');
 
-router.post('/', async function (req, res, next) {
+router.post('/', middleware, async function (req, res, next) {
     try {
         const produto = await produtoController.saveProduto(req.body);
         res.status(201).json(produto);
@@ -29,7 +30,7 @@ router.get('/:id', async function (req, res, next) {
     }
 });
 
-router.put('/:id', async function (req, res, next) {
+router.put('/:id', middleware, async function (req, res, next) {
     try {
         await produtoController.updateProduto(req.params.id, req.body);
         res.status(204).end();
@@ -38,7 +39,7 @@ router.put('/:id', async function (req, res, next) {
     }
 });
 
-router.delete('/:id', async function (req, res, next) {
+router.delete('/:id', middleware, async function (req, res, next) {
     try {
         await produtoController.deleteProduto(req.params.id);
         res.status(204).end();

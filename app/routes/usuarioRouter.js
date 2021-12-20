@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
+const middleware = require('../middlewares/auth');
 
 router.post('/', async function (req, res, next) {
     try {
@@ -20,7 +21,7 @@ router.post('/login', async function (req, res, next) {
     }
 });
 
-router.get('/', async function (req, res, next) {
+router.get('/', middleware, async function (req, res, next) {
     try {
         const usuarios = await usuarioController.getUsuarios();
         res.status(200).json(usuarios);
@@ -29,7 +30,7 @@ router.get('/', async function (req, res, next) {
     }
 });
 
-router.get('/:id', async function (req, res, next) {
+router.get('/:id', middleware, async function (req, res, next) {
     try {
         const usuario = await usuarioController.getUsuarioPorId(req.params.id);
         res.status(200).json(usuario);
@@ -38,7 +39,7 @@ router.get('/:id', async function (req, res, next) {
     }
 });
 
-router.put('/:id', async function (req, res, next) {
+router.put('/:id', middleware, async function (req, res, next) {
     try {
         await usuarioController.updateUsuario(req.params.id, req.body);
         res.status(204).end();
@@ -47,7 +48,7 @@ router.put('/:id', async function (req, res, next) {
     }
 });
 
-router.delete('/:id', async function (req, res, next) {
+router.delete('/:id', middleware, async function (req, res, next) {
     try {
         await usuarioController.deleteUsuario(req.params.id);
         res.status(204).end();
@@ -56,7 +57,7 @@ router.delete('/:id', async function (req, res, next) {
     }
 });
 
-router.get('/email/:email', async function (req, res, next) {
+router.get('/email/:email', middleware, async function (req, res, next) {
     try {
         const usuario = await usuarioController.getUsuarioPorEmail(req.params.email);
         res.status(200).json(usuario);
