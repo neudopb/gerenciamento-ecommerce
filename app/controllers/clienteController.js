@@ -25,24 +25,6 @@ exports.getClientePorId = async function (id) {
     });
 };
 
-exports.getClientePorEmail = async function (email) {
-    const cliente = await buscarEmail(email);
-
-    if (!cliente) throw new Error('Not Found');
-
-    return cliente;
-};
-
-exports.getClientePorNome = async function (nome) {
-    const clientes = await Cliente.findAll({
-        where: { nome: nome }
-    });
-
-    if (clientes.length === 0) throw new Error('Not Found');
-
-    return clientes;
-};
-
 exports.updateCliente = async function (id, body) {
     const cliente = await exports.getClientePorId(id);
 
@@ -65,4 +47,22 @@ exports.deleteCliente = async function (id) {
     return Cliente.destroy({
         where: { id: id }
     });
+};
+
+exports.getClientePorEmail = async function (email) {
+    const cliente = await buscarEmail(email);
+
+    if (!cliente) throw new Error('Not Found');
+
+    return cliente;
+};
+
+exports.getClientePorNome = async function (nome) {
+    const clientes = await Cliente.findAll({
+        where: { nome: nome }
+    });
+
+    if (clientes.length === 0) throw new Error('Not Found');
+
+    return clientes;
 };
