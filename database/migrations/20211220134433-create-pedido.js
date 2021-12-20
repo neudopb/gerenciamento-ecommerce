@@ -10,7 +10,8 @@ module.exports = {
       },
       cliente_id: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE'
       },
       data: {
         allowNull: false,

@@ -22,7 +22,6 @@ exports.getClientes = async function () {
 };
 
 exports.getClientePorId = async function (id) {
-
     const cliente = await Cliente.findOne({
         where: { id: id }
     });
