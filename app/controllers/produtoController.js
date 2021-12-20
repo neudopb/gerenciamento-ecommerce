@@ -2,7 +2,7 @@ const Produto = require('../models').Produto;
 
 exports.saveProduto = async function (body) {
 
-    if (Object.keys(body). length === 0) throw new Error('Bad Request');
+    if (Object.keys(body).length === 0) throw new Error('Bad Request');
     
     return Produto.create(body);
 };
@@ -23,7 +23,7 @@ exports.getProdutoPorId = async function (id) {
 };
 
 exports.updateProduto = async function (id, body) {
-    if (Object.keys(body). length === 0) throw new Error('Bad Request');
+    if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
     await exports.getProdutoPorId(id);
 

@@ -8,7 +8,7 @@ function buscarEmail(email) {
 
 exports.saveCliente = async function (body) {
 
-    if (Object.keys(body). length === 0) throw new Error('Bad Request');
+    if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
     const searchCliente = await buscarEmail(body.email);
 
@@ -33,13 +33,13 @@ exports.getClientePorId = async function (id) {
 };
 
 exports.updateCliente = async function (id, body) {
-    if (Object.keys(body). length === 0) throw new Error('Bad Request');
+    if (Object.keys(body).length === 0) throw new Error('Bad Request');
 
-    const cliente = await exports.getClientePorId(id);
+    await exports.getClientePorId(id);
 
-    const result = await Cliente.update(body, 
-        {where: { id: id }}
-    );
+    const result = await Cliente.update(body, {
+        where: { id: id }
+    });
     
     if (result[0] === 0) throw new Error('Bad Request');
 
@@ -47,9 +47,7 @@ exports.updateCliente = async function (id, body) {
 };
 
 exports.deleteCliente = async function (id) {
-    const cliente = await exports.getClientePorId(id);
-
-    if (!cliente) throw new Error('Not Found');
+    await exports.getClientePorId(id);
 
     return Cliente.destroy({
         where: { id: id }
