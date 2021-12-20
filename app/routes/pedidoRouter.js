@@ -47,4 +47,13 @@ router.delete('/:id', async function (req, res, next) {
     }
 });
 
+router.get('/cliente/:id', async function (req, res, next) {
+    try {
+        const pedidos = await pedidoController.getPedidoPorCliente(req.params.id);
+        res.status(200).json(pedidos);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = app => app.use('/pedido', router);

@@ -63,10 +63,24 @@ exports.updatePedido = async function(id, body) {
     }
 
     return;
-}
+};
 
 exports.deletePedido = async function (id) {
     const pedido = await exports.getPedidoPorId(id);
     
     return pedido.destroy();
-}
+};
+
+exports.getPedidoPorCliente = async function (id) {
+    return Pedido.findAll({
+        where: { cliente_id: id },
+        include: [
+            { model: Cliente },
+            {
+                model: Produto,
+                as: 'produtos',
+                through: { attributes: [] },
+            },
+        ],
+    });
+};
