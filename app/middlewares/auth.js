@@ -5,20 +5,20 @@ module.exports = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if(!authHeader) 
-        return res.status(401).send({error: 'No token provided'});
+        throw new Error('Unauthorized - Nenhum token fornecido');
     
     const parts = authHeader.split(' ');
 
     if (!parts.length === 2)
-        return res.status(401).send({error: 'Token error'});
+        throw new Error('Unauthorized - Token erro');
         
     const [scheme, token] = parts;
         
     if(!/^Bearer$/i.test(scheme))
-        return res.status(401).send({error: 'Token malformatted'});
+        throw new Error('Unauthorized - Token malformatado');
 
     jwt.verify(token, authConfig.secret, (err, decoded) => {
-        if (err) return res.status(401).send({error: 'Token invalid'});
+        if (err) throw new Error('Unauthorized - Token invalido');
         
         req.userId = decoded.params.id;
         return next();

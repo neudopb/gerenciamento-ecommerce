@@ -1,7 +1,24 @@
 const Usuario = require('../models').Usuario;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const yup = require('yup');
 const authConfig = require('../../config/auth.json');
+
+const schema = yup.object().shape({
+    email: yup.string("Necessário preencher o campo E-mail")
+        .required("Necessário preencher o campo E-mail")
+        .email("Necessário preencher o campo com E-mail válido"),
+    senha: yup.string("Necessário preencher o campo senha")
+        .required("Necessário preencher o campo senha")
+        .min(6, "Senha deve ter no mínimo 6 caracteres")
+});
+
+const schemaUpdate = yup.object().shape({
+    email: yup.string("Necessário preencher o campo E-mail")
+        .email("Necessário preencher o campo com E-mail válido"),
+    senha: yup.string("Necessário preencher o campo senha")
+        .min(6, "Senha deve ter no mínimo 6 caracteres")
+});
 
 function generateToken(params = {}) {
     return jwt.sign({ params }, authConfig.secret, {
@@ -16,30 +33,35 @@ function buscarEmail(email) {
 };
 
 exports.saveUsuario = async function(body) {
-    if (Object.keys(body).length === 0) throw new Error('Bad Request');
+    try {
+        await schema.validate(body);
+    } catch (err) {
+        throw new Error('Bad Request - ' + err.errors);
+    }
 
     const searchUsuario = await buscarEmail(body.email);
 
-    if (searchUsuario) throw new Error('Conflict');
+    if (searchUsuario) throw new Error('Conflict - E-mail já cadastrado');
     
     const usuario = await Usuario.create(body);
 
-    return {
-        usuario,
-        token: generateToken({ id: usuario.id})
-    };
+    return usuario;
 };
 
 exports.login = async function(body) {
-    if (Object.keys(body).length === 0) throw new Error('Bad Request');
+    try {
+        await schema.validate(body);
+    } catch (err) {
+        throw new Error('Bad Request - ' + err.errors);
+    }
 
     const usuario = await buscarEmail(body.email);
 
-    if (!usuario) throw new Error('Not Found');
+    if (!usuario) throw new Error('Not Found - Usuário não encontrado');
     
 
     if (!await bcrypt.compare(body.senha, usuario.senha))
-        throw new Error('Not Found');
+        throw new Error('Not Found - Senha incorreta');
 
     usuario.senha = undefined;
 
@@ -61,13 +83,17 @@ exports.getUsuarioPorId = async function (id) {
         attributes: { exclude: ['senha']}
     });
 
-    if (!usuario) throw new Error('Not Found');
+    if (!usuario) throw new Error('Not Found - Usuário não encontrado');
 
     return usuario;
 };
 
 exports.updateUsuario = async function (id, body) {
-    if (Object.keys(body).length === 0) throw new Error('Bad Request');
+    try {
+        await schemaUpdate.validate(body);
+    } catch (err) {
+        throw new Error('Bad Request - ' + err.errors);
+    }
 
     await exports.getUsuarioPorId(id);
 
@@ -89,7 +115,7 @@ exports.deleteUsuario = async function (id) {
 exports.getUsuarioPorEmail = async function (email) {
     const usuario = await buscarEmail(email);
 
-    if (!usuario) throw new Error('Not Found');
+    if (!usuario) throw new Error('Not Found - Usuário não encontrado');
 
     usuario.senha = undefined;
 
