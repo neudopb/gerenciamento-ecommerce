@@ -2,9 +2,19 @@ const express = require('express');
 const router = express.Router();
 const produtoController = require('../controllers/produtoController');
 const middleware = require('../middlewares/auth');
+const multer = require('multer');
+const multerConfig = require('../../config/multer');
 
-router.post('/', middleware, async function (req, res, next) {
+const upload = multer(multerConfig);
+
+router.post('/', middleware, upload.single('imagem'), async function (req, res, next) {
     try {
+        const { key, location: url = "" } = req.file;
+
+        const body = req.body;
+        body['imagem_name'] = key;
+        body['imagem_url'] = url;
+        
         const produto = await produtoController.saveProduto(req.body);
         res.status(201).json(produto);
     } catch (err) {
@@ -30,8 +40,14 @@ router.get('/:id', async function (req, res, next) {
     }
 });
 
-router.put('/:id', middleware, async function (req, res, next) {
+router.put('/:id', middleware, upload.single('imagem'), async function (req, res, next) {
     try {
+        const { key, location: url = "" } = req.file;
+
+        const body = req.body;
+        if (key) body['imagem_name'] = key;
+        if (url) body['imagem_url'] = url;
+
         await produtoController.updateProduto(req.params.id, req.body);
         res.status(204).end();
     } catch (err) {

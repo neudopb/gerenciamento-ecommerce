@@ -1,5 +1,11 @@
 const Produto = require('../models').Produto;
 const yup = require('yup');
+const aws = require('aws-sdk');
+const fs = require('fs');
+const path = require('path');
+const { promisify } = require('util');
+
+const s3 = new aws.S3();
 
 const schema = yup.object().shape({
     nome: yup.string("Necessário preencher o campo nome")
@@ -21,11 +27,30 @@ const schemaUpdate = yup.object().shape({
     caracteristicas: yup.string("Necessário preencher o campo características"),
 });
 
+function delete_imagem(name) {
+    if (process.env.STORAGE_TYPE === 's3') {
+        return s3
+            .deleteObject({
+                Bucket: "image-upload-neudo",
+                Key: name
+            })
+            .promise();
+    } else {
+        const path_file = path.resolve(__dirname, "..", "..", "tmp", name)
+        if (fs.existsSync(path_file))
+            return promisify(fs.unlink) (path_file);
+    }
+}
+
 exports.saveProduto = async function (body) {
     try {
         await schema.validate(body);
     } catch (err) {
         throw new Error('Bad Request - ' + err.errors);
+    }
+
+    if (!body.imagem_url) {
+        body.imagem_url = `${process.env.APP_URL}/files/${body.imagem_name}`;
     }
     
     return Produto.create(body);
@@ -55,11 +80,28 @@ exports.updateProduto = async function (id, body) {
 
     const produto = await exports.getProdutoPorId(id);
 
+    if (body.imagem_name && body.imagem_name !== produto.imagem_name) {
+        try {
+            delete_imagem(produto.imagem_name);
+        } catch (err) {
+            console.log('Não existe a imagem - ', err.message);
+        }
+        if (!body.imagem_url) {
+            body.imagem_url = `${process.env.APP_URL}/files/${body.imagem_name}`;
+        }
+    }
+
     return produto.update(body);
 };
 
 exports.deleteProduto = async function (id) {
     const produto = await exports.getProdutoPorId(id);
+
+    try {
+        delete_imagem(produto.imagem_name);
+    } catch (err) {
+        console.log('Não existe a imagem - ', err.message);
+    }
 
     return produto.destroy();
 };
