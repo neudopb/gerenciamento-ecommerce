@@ -507,6 +507,175 @@
                     }
                 }
             }
+        },
+
+        "/produto": {
+            "post": {
+                "summary": "Cadastro de produto",
+                "description": "Essa rota será responsável por cadastrar um novo produto",
+                "tags": ["Produto"],
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Produto"
+                            },
+                            "examples": {
+                                "produto": {
+                                    "value": {
+                                        "nome": "celular",
+                                        "preco": 1000,
+                                        "codigo": "95137",
+                                        "caracteristicas": "novo",
+                                        "imagem": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "201": {
+                        "description": "created",
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Produto"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Busca de todos os produtos",
+                "description": "Essa rota será responsável por buscar todos os produtos",
+                "tags": ["Produto"],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Produto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/produto/{id}": {
+            "get": {
+                "summary": "Busca de produto pelo id",
+                "description": "Essa rota será responsável por buscar um produto pelo id",
+                "tags": ["Produto"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do produto para buscar",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Not Found - produto não encontrado"
+                    },
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "multipart/form-data": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Produto"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Alteração de produto pelo id",
+                "description": "Essa rota será responsável por alterar um produto pelo id",
+                "tags": ["Produto"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do produto para alterar",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Produto"
+                            },
+                            "examples": {
+                                "cliente": {
+                                    "value": {
+                                        "nome": "celular",
+                                        "preco": 900,
+                                        "codigo": "95137",
+                                        "caracteristicas": "semi novo",
+                                        "imagem": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "404": {
+                        "description": "Not Found - Cliente não encontrado"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Exclusão de produto pelo id",
+                "description": "Essa rota será responsável por excluir um produto pelo id",
+                "tags": ["Produto"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do produto para deletar",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "404": {
+                        "description": "Not Found - Produto não encontrado"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -542,6 +711,27 @@
                     },
                     "endereco": {
                         "type": "string"
+                    }
+                }
+            },
+            "Produto": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string"
+                    },
+                    "preco": {
+                        "type": "number"
+                    },
+                    "codigo": {
+                        "type": "string"
+                    },
+                    "caracteristicas": {
+                        "type": "string"
+                    },
+                    "imagem": {
+                        "type": "string",
+                        "format": "binary"
                     }
                 }
             }
