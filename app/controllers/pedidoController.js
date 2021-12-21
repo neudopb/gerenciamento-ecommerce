@@ -1,13 +1,41 @@
 const { Pedido, Produto, Cliente } = require('../models');
+const Sequelize = require('sequelize');
+const yup = require('yup');
+
+const schema = yup.object().shape({
+    cliente_id: yup.number("Necessário preencher o campo cliente_id")
+        .required("Necessário preencher o campo cliente_id")
+        .positive("Necessário informar um valor positivo")
+        .integer("Necessário informar um valor inteiro"),
+    data: yup.date("Necessário informar uma data válida")
+        .required("Necessário preencher o campo data"),
+    status: yup.mixed().oneOf(["pendente", "cancelado", "pago"], "Status deve ser 'pendente', 'cancelado' ou 'pago'"),
+    produtos: yup.array(),
+});
+
+const schemaUpdate = yup.object().shape({
+    cliente_id: yup.number("Necessário preencher o campo cliente_id")
+        .positive("Necessário informar um valor positivo")
+        .integer("Necessário informar um valor inteiro"),
+    data: yup.date("Necessário informar uma data válida"),
+    status: yup.mixed().oneOf(["pendente", "cancelado", "pago"], "Status deve ser 'pendente', 'cancelado' ou 'pago'"),
+    produtos: yup.array(),
+});
 
 exports.savePedido = async function (body) {
+    try {
+        await schema.validate(body);
+    } catch (err) {
+        throw new Error('Bad Request - ' + err.errors);
+    }
+
     const { produtos, ...data } = body;
 
     const cliente = await Cliente.findOne({ 
         where: { id: body.cliente_id }
     });
 
-    if (!cliente) throw new Error('Not Found');
+    if (!cliente) throw new Error('Not Found - Cliente não encontrado');
 
     const pedido = await Pedido.create(data);
 
@@ -44,13 +72,17 @@ exports.getPedidoPorId = async function(id) {
         ],
     });
 
-    if (!pedido) throw new Error('Not Found');
+    if (!pedido) throw new Error('Not Found - Pedido não encontrado');
 
     return pedido;
 };
 
 exports.updatePedido = async function(id, body) {
-    if (Object.keys(body).length === 0) throw new Error('Bad Request');
+    try {
+        await schemaUpdate.validate(body);
+    } catch (err) {
+        throw new Error('Bad Request - ' + err.errors);
+    }
 
     const pedido = await exports.getPedidoPorId(id);
 
