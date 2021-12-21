@@ -262,6 +262,7 @@
                 }
             }
         },
+
         "/cliente": {
             "post": {
                 "summary": "Cadastro de cliente",
@@ -511,7 +512,7 @@
 
         "/produto": {
             "post": {
-                "summary": "Cadastro de produto",
+                "summary": "Cadastro de produtos",
                 "description": "Essa rota será responsável por cadastrar um novo produto",
                 "tags": ["Produto"],
                 "security": [{ "bearerAuth": [] }],
@@ -676,6 +677,256 @@
                     }
                 }
             }
+        },
+
+        "/pedido": {
+            "post": {
+                "summary": "Cadastro de pedidos",
+                "description": "Essa rota será responsável por cadastrar um novo pedido - Status deve ser 'pendente', 'cancelado' ou 'pago'",
+                "tags": ["Pedido"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Pedido"
+                            },
+                            "examples": {
+                                "pedido": {
+                                    "value": {
+                                        "cliente_id": 2,
+                                        "produtos": [1,2],
+                                        "data": "2021-12-20",
+                                        "status": "pendente"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "409": {
+                        "description": "Conflict - Cliente não encontrado"
+                    },
+                    "201": {
+                        "description": "created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pedido"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "Busca de todos os pedidos",
+                "description": "Essa rota será responsável por buscar todos os pedidos",
+                "tags": ["Pedido"],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Pedido"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pedido/{id}": {
+            "get": {
+                "summary": "Busca de pedido pelo id",
+                "description": "Essa rota será responsável por buscar um pedido pelo id",
+                "tags": ["Pedido"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do pedido para buscar",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "404": {
+                        "description": "Not Found - pedido não encontrado"
+                    },
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pedido"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Alteração de pedido pelo id",
+                "description": "Essa rota será responsável por alterar um pedido pelo id - Status deve ser 'pendente', 'cancelado' ou 'pago'",
+                "tags": ["Pedido"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do pedido para alterar",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Pedido"
+                            },
+                            "examples": {
+                                "pedido": {
+                                    "value": {
+                                        "cliente_id": 2,
+                                        "produtos": [3,4],
+                                        "data": "2021-12-21",
+                                        "status": "pago"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "404": {
+                        "description": "Not Found - Pedido não encontrado"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Exclusão de pedido pelo id",
+                "description": "Essa rota será responsável por excluir um pedido pelo id",
+                "tags": ["Pedido"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do pedido para deletar",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "404": {
+                        "description": "Not Found - Pedido não encontrado"
+                    },
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/pedido/cliente/{id}": {
+            "get": {
+                "summary": "Busca de pedidos pelo id do cliente",
+                "description": "Essa rota será responsável por buscar todos os pedidos de um cliente",
+                "tags": ["Pedido"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id do cliente para buscar",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request - parametro inválido"
+                    },
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "404": {
+                        "description": "Not Found - Pedido não encontrado"
+                    },
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pedido"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pedido/ano/{ano}": {
+            "get": {
+                "summary": "Busca de pedidos pelo ano",
+                "description": "Essa rota será responsável por buscar todos os pedidos de um ano",
+                "tags": ["Pedido"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "ano",
+                        "in": "path",
+                        "description": "ano para buscar",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request - parametro inválido"
+                    },
+                    "401": {
+                        "description": "Unauthorized - Nenhum token fornecido"
+                    },
+                    "404": {
+                        "description": "Not Found - Pedido não encontrado"
+                    },
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Pedido"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -732,6 +983,26 @@
                     "imagem": {
                         "type": "string",
                         "format": "binary"
+                    }
+                }
+            },
+            "Pedido": {
+                "type": "object",
+                "properties": {
+                    "cliente_id": {
+                        "type": "integer"
+                    },
+                    "produtos": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "data": {
+                        "type": "date"
+                    },
+                    "status": {
+                        "type": "string"
                     }
                 }
             }

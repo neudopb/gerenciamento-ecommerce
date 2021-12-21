@@ -1,6 +1,8 @@
 const { Pedido, Produto, Cliente } = require('../models');
 const Sequelize = require('sequelize');
 const yup = require('yup');
+const moment = require('moment');
+const Op = Sequelize.Op;
 
 const schema = yup.object().shape({
     cliente_id: yup.number("Necessário preencher o campo cliente_id")
@@ -22,7 +24,15 @@ const schemaUpdate = yup.object().shape({
     produtos: yup.array(),
 });
 
+function validarData(data) {
+    return moment(data, 'YYYY-MM-DD', true).isValid();
+}
+
 exports.savePedido = async function (body) {
+    if (!validarData(body.data)) {
+        throw new Error('Bad Request - O formato da data deve ser YYYY-MM-DD');
+    }
+
     try {
         await schema.validate(body);
     } catch (err) {
@@ -78,6 +88,9 @@ exports.getPedidoPorId = async function(id) {
 };
 
 exports.updatePedido = async function(id, body) {
+    if (body.data && !validarData(body.data))
+        throw new Error('Bad Request - O formato da data deve ser YYYY-MM-DD');
+
     try {
         await schemaUpdate.validate(body);
     } catch (err) {
@@ -102,7 +115,9 @@ exports.deletePedido = async function (id) {
 };
 
 exports.getPedidoPorCliente = async function (id) {
-    return Pedido.findAll({
+    if (!id) throw new Error('Bad Request - parametro inválido');
+
+    const pedidos = await Pedido.findAll({
         where: { cliente_id: id },
         include: [
             { model: Cliente },
@@ -113,4 +128,31 @@ exports.getPedidoPorCliente = async function (id) {
             },
         ],
     });
+
+    if (pedidos.length === 0) throw new Error('Not Found - pedidos não encontrado');
+
+    return pedidos;
+};
+
+exports.getPedidoPorAno = async function (ano) {
+    if (!ano) throw new Error('Bad Request - parametro inválido');
+    
+    const pedidos = await Pedido.findAll({
+        where: { [Op.and]: [
+            Sequelize.where(Sequelize.fn('date', Sequelize.col('data')), '>=', `${ano}-01-01`),
+            Sequelize.where(Sequelize.fn('date', Sequelize.col('data')), '<=', `${ano}-12-31`),
+        ] },
+        include: [
+            { model: Cliente },
+            {
+                model: Produto,
+                as: 'produtos',
+                through: { attributes: [] },
+            },
+        ],
+    });
+
+    if (pedidos.length === 0) throw new Error('Not Found - pedidos não encontrado');
+
+    return pedidos;
 };

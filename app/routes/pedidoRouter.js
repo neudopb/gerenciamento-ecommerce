@@ -57,4 +57,13 @@ router.get('/cliente/:id', middleware, async function (req, res, next) {
     }
 });
 
+router.get('/ano/:ano', middleware, async function (req, res, next) {
+    try {
+        const pedidos = await pedidoController.getPedidoPorAno(req.params.ano);
+        res.status(200).json(pedidos);
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = app => app.use('/pedido', router);
