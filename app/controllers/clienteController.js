@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const Cliente = require('../models').Cliente;
 const yup = require('yup');
 
@@ -59,7 +61,7 @@ exports.getClientePorId = async function (id) {
 
 exports.updateCliente = async function (id, body) {
     try {
-        await schemaUpdate.validate(body);
+        await schemaUpdade.validate(body);
     } catch (err) {
         throw new Error('Bad Request - ' + err.errors);
     }
@@ -83,8 +85,9 @@ exports.getClientePorEmail = async function (email) {
 };
 
 exports.getClientePorNome = async function (nome) {
+    const query = `%${nome}%`
     const clientes = await Cliente.findAll({
-        where: { nome: nome }
+        where: { nome: { [Op.like]: query} }
     });
 
     if (clientes.length === 0) throw new Error('Not Found - Cliente não encontrado');
