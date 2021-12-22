@@ -17,6 +17,8 @@ const schema = yup.object().shape({
         .required("Necessário preencher o campo código"),
     caracteristicas: yup.string("Necessário preencher o campo características")
         .required("Necessário preencher o campo características"),
+    imagem_name: yup.string("Necessário preencher o campo imagem")
+        .required("Necessário preencher o campo imagem")
 });
 
 const schemaUpdate = yup.object().shape({

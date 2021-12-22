@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 module.exports = {
   username: process.env.POSTGRESQL_DB_USER,
   password: process.env.POSTGRESQL_DB_PASSWORD,

@@ -9,11 +9,13 @@ const upload = multer(multerConfig);
 
 router.post('/', middleware, upload.single('imagem'), async function (req, res, next) {
     try {
-        const { key, location: url = "" } = req.file;
-
         const body = req.body;
-        body['imagem_name'] = key;
-        body['imagem_url'] = url;
+
+        try {
+            const { key, location: url = "" } = req.file;
+            if (key) body['imagem_name'] = key;
+            if (url) body['imagem_url'] = url;
+        } catch (err) {}
         
         const produto = await produtoController.saveProduto(req.body);
         res.status(201).json(produto);
@@ -42,11 +44,13 @@ router.get('/:id', async function (req, res, next) {
 
 router.put('/:id', middleware, upload.single('imagem'), async function (req, res, next) {
     try {
-        const { key, location: url = "" } = req.file;
-
         const body = req.body;
-        if (key) body['imagem_name'] = key;
-        if (url) body['imagem_url'] = url;
+        
+        try {
+            const { key, location: url = "" } = req.file;
+            if (key) body['imagem_name'] = key;
+            if (url) body['imagem_url'] = url;
+        } catch (err) {}
 
         await produtoController.updateProduto(req.params.id, req.body);
         res.status(204).end();
