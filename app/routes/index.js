@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+// Gerenciamento de todas as rotas
 module.exports = app => {
     fs
         .readdirSync(__dirname)

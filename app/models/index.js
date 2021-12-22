@@ -7,6 +7,7 @@ const config = require('../../config/database.js');
 const db = {};
 const sequelize = new Sequelize(config);
 
+// Gerenciamento de todos os models
 fs
   .readdirSync(__dirname)
   .filter(file => {

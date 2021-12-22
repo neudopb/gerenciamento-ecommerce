@@ -2,6 +2,7 @@
 const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize, DataTypes) => {
+  // Validações feitas no migrations
   const Usuario = sequelize.define('Usuario', {
     email: DataTypes.STRING,
     senha: DataTypes.STRING
@@ -10,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     hooks: {
       beforeCreate: async (usuario) => {
         if (usuario.senha) {
-          usuario.senha = await bcrypt.hash(usuario.senha, 10);
+          usuario.senha = await bcrypt.hash(usuario.senha, 10); // Criptografar a senha antes de salvar
         }
       }
     }

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const yup = require('yup');
 const authConfig = require('../../config/auth.json');
 
+// Validação de formulário
 const schema = yup.object().shape({
     email: yup.string("Necessário preencher o campo E-mail")
         .required("Necessário preencher o campo E-mail")
@@ -13,6 +14,7 @@ const schema = yup.object().shape({
         .min(6, "Senha deve ter no mínimo 6 caracteres")
 });
 
+// Validação de formulário para atualização
 const schemaUpdate = yup.object().shape({
     email: yup.string("Necessário preencher o campo E-mail")
         .email("Necessário preencher o campo com E-mail válido"),
@@ -20,12 +22,14 @@ const schemaUpdate = yup.object().shape({
         .min(6, "Senha deve ter no mínimo 6 caracteres")
 });
 
+// Função para gerar um token
 function generateToken(params = {}) {
     return jwt.sign({ params }, authConfig.secret, {
         expiresIn: 86400,
     });
 };
 
+// Função para busca de e-mail
 function buscarEmail(email) {
     return Usuario.findOne({ 
         where: { email: email }

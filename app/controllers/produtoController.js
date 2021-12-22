@@ -7,6 +7,7 @@ const { promisify } = require('util');
 
 const s3 = new aws.S3();
 
+// Validação de formulário
 const schema = yup.object().shape({
     nome: yup.string("Necessário preencher o campo nome")
         .required("Necessário preencher o campo nome"),
@@ -21,6 +22,7 @@ const schema = yup.object().shape({
         .required("Necessário preencher o campo imagem")
 });
 
+// Validação de formulário para atualização
 const schemaUpdate = yup.object().shape({
     nome: yup.string("Necessário preencher o campo nome"),
     preco: yup.number("Necessário preencher o campo preço")
@@ -29,6 +31,7 @@ const schemaUpdate = yup.object().shape({
     caracteristicas: yup.string("Necessário preencher o campo características"),
 });
 
+// Função para apagar a imagem ao deletar ou atualizar
 function delete_imagem(name) {
     if (process.env.STORAGE_TYPE === 's3') {
         return s3
@@ -51,6 +54,7 @@ exports.saveProduto = async function (body) {
         throw new Error('Bad Request - ' + err.errors);
     }
 
+    // Caso a imagem não tenha sido salva no S3, gera um link para o arquivo local
     if (!body.imagem_url) {
         body.imagem_url = `${process.env.APP_URL}/files/${body.imagem_name}`;
     }
@@ -63,7 +67,6 @@ exports.getProdutos = async function () {
 };
 
 exports.getProdutoPorId = async function (id) {
-    // return Produto.findOne(id);
     const produto = await Produto.findOne({
         where: {id: id}
     });
@@ -82,12 +85,14 @@ exports.updateProduto = async function (id, body) {
 
     const produto = await exports.getProdutoPorId(id);
 
+    // Verifica se veio uma imagem e se ela é diferente da que já está salva
     if (body.imagem_name && body.imagem_name !== produto.imagem_name) {
         try {
             delete_imagem(produto.imagem_name);
         } catch (err) {
             console.log('Não existe a imagem - ', err.message);
         }
+        // Caso a imagem não tenha sido salva no S3, gera um link para o arquivo local
         if (!body.imagem_url) {
             body.imagem_url = `${process.env.APP_URL}/files/${body.imagem_name}`;
         }

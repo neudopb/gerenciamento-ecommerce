@@ -1,17 +1,20 @@
 const crypto = require('crypto');
 const axios = require('axios');
+require('dotenv').config();
 const usuarioController = require('../controllers/usuarioController');
 const clienteController = require('../controllers/clienteController');
 const produtoController = require('../controllers/produtoController');
-const pedidoController = require('../controllers/pedidoController');
 
-const url = 'http://localhost:3000';
+const url = process.env.APP_URL;
+// O Token deve ser atualizado sempre que for testar
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJhbXMiOnsiaWQiOjR9LCJpYXQiOjE2NDAxMTU2MzMsImV4cCI6MTY0MDIwMjAzM30.ubGM7xMoYuQyKbFSCU61cRqS443ZhmWb04qoWQCts-I';
 
+// Gerar informações randomicas para os dados
 const generate = function () {
     return crypto.randomBytes(10).toString('hex');
 };
 
+// Função para fazer a requisição
 const request = function (url, method, data, token) {
     if (token)
         axios.defaults.headers.common = {'Authorization': `Bearer ${token}`}

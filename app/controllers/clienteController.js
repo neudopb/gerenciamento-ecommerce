@@ -3,6 +3,7 @@ const Op = Sequelize.Op;
 const Cliente = require('../models').Cliente;
 const yup = require('yup');
 
+// Validação de formulário
 const schema = yup.object().shape({
     nome: yup.string("Necessário preencher o campo nome")
         .required("Necessário preencher o campo nome"),
@@ -16,6 +17,7 @@ const schema = yup.object().shape({
         .required("Necessário preencher o campo endereço")
 });
 
+// Validação de formulário para atualização
 const schemaUpdade = yup.object().shape({
     nome: yup.string("Necessário preencher o campo nome"),
     email: yup.string("Necessário preencher o campo E-mail")
@@ -25,6 +27,7 @@ const schemaUpdade = yup.object().shape({
     endereco: yup.string("Necessário preencher o campo endereço")
 });
 
+// Função para busca de e-mail
 function buscarEmail(email) {
     return Cliente.findOne({
         where: { email: email }
@@ -85,6 +88,7 @@ exports.getClientePorEmail = async function (email) {
 };
 
 exports.getClientePorNome = async function (nome) {
+    // Busca por parte de um nome
     const query = `%${nome}%`
     const clientes = await Cliente.findAll({
         where: { nome: { [Op.like]: query} }

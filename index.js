@@ -8,11 +8,12 @@ require('dotenv').config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-app.use('/files', express.static(path.resolve(__dirname, 'tmp')));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs)); // Rota para a documentação 
+app.use('/files', express.static(path.resolve(__dirname, 'tmp'))); // Rota para gerenciar as imagens
 
 require('./app/routes/index')(app);
 
+// Tratamento dos erros
 app.use(function (error, req, res, next) {
     if (error.message.includes('Bad Request')) {
         return res.status(400).send({erro: error.message});

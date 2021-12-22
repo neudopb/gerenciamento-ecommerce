@@ -4,6 +4,7 @@ const yup = require('yup');
 const moment = require('moment');
 const Op = Sequelize.Op;
 
+// Validação de formulário
 const schema = yup.object().shape({
     cliente_id: yup.number("Necessário preencher o campo cliente_id")
         .required("Necessário preencher o campo cliente_id")
@@ -15,6 +16,7 @@ const schema = yup.object().shape({
     produtos: yup.array(),
 });
 
+// Validação de formulário para atualização
 const schemaUpdate = yup.object().shape({
     cliente_id: yup.number("Necessário preencher o campo cliente_id")
         .positive("Necessário informar um valor positivo")
@@ -24,11 +26,13 @@ const schemaUpdate = yup.object().shape({
     produtos: yup.array(),
 });
 
+// Função para validar data
 function validarData(data) {
     return moment(data, 'YYYY-MM-DD', true).isValid();
 }
 
 exports.savePedido = async function (body) {
+    // Verifica se a data informada é valida
     if (!validarData(body.data)) {
         throw new Error('Bad Request - O formato da data deve ser YYYY-MM-DD');
     }
@@ -88,6 +92,7 @@ exports.getPedidoPorId = async function(id) {
 };
 
 exports.updatePedido = async function(id, body) {
+    // Verifica se a data informada é valida
     if (body.data && !validarData(body.data))
         throw new Error('Bad Request - O formato da data deve ser YYYY-MM-DD');
 
@@ -137,6 +142,7 @@ exports.getPedidoPorCliente = async function (id) {
 exports.getPedidoPorAno = async function (ano) {
     if (!ano) throw new Error('Bad Request - parametro inválido');
     
+    // Verifica se existe pedidos dentro do ano informado
     const pedidos = await Pedido.findAll({
         where: { [Op.and]: [
             Sequelize.where(Sequelize.fn('date', Sequelize.col('data')), '>=', `${ano}-01-01`),

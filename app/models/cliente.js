@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
+  // Validações feitas no migrations
   const Cliente = sequelize.define('Cliente', {
     nome: DataTypes.STRING,
     email: DataTypes.STRING,
